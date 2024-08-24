@@ -53,7 +53,7 @@ module.exports = function (app) {
   app
     .route("/api/books")
     .get(async function (req, res) {
-      console.log(req.params, req.url, req.method)
+      console.log(req.params, req.url, req.method);
       //response will be array of book objects
       //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
       try {
@@ -97,7 +97,7 @@ module.exports = function (app) {
   app
     .route("/api/books/:id")
     .get(async function (req, res) {
-      console.log(req.params, req.url, req.method)
+      console.log(req.params, req.url, req.method);
       let bookid = req.params.id;
       if (!bookid) {
         res.send("no book exists");
@@ -121,23 +121,22 @@ module.exports = function (app) {
       let comment = req.body.comment;
       //json res format same as .get
       if (!comment) {
-        return res.send('missing required field comment')
-      };
+        return res.send("missing required field comment");
+      }
 
       try {
         const result = await collection.updateOne(
           { _id: bookid },
-          { $push: { comments: comment }}
+          { $push: { comments: comment } }
         );
         if (result.matchedCount === 0) {
-          return res.send('no book exists')
+          return res.send("no book exists");
         }
         const updatedBook = await collection.findOne({ _id: bookid });
         res.json(updatedBook);
       } catch (err) {
         if (err) console.error(err);
-      };
-
+      }
     })
 
     .delete(async function (req, res) {
@@ -146,13 +145,12 @@ module.exports = function (app) {
       try {
         const result = await collection.deleteOne({ _id: bookid });
         if (result.deletedCount === 0) {
-          return res.send('no book exists');
+          return res.send("no book exists");
         } else {
-          res.send('delete successful')
+          res.send("delete successful");
         }
-        
       } catch (err) {
         if (err) console.error(err);
-      };
+      }
     });
 };
