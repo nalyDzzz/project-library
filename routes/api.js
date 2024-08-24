@@ -1,10 +1,40 @@
-/*
-*
-*
-*       Complete the API routing below
-*       
-*       
-*/
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const crypto = require('crypto');
+const uri = process.env.MONGO_URI
+
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+class Books {
+  constructor(title) {
+    this._id = this.generateId();
+    this.title = title;
+  }
+  generateId() {
+    return crypto.randomBytes(12).toString('hex');
+  }
+}
+
+console.log(new Books)
+
+const run = async () => {
+  try {
+    await client.connect();
+    const db = client.db('database');
+    const collection = db.collection('documents');
+    console.log("You are connected!");
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+run()
+
 
 'use strict';
 
@@ -19,6 +49,7 @@ module.exports = function (app) {
     .post(function (req, res){
       let title = req.body.title;
       //response will contain new book object including atleast _id and title
+
     })
     
     .delete(function(req, res){
