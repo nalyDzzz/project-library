@@ -33,7 +33,6 @@ class Books {
 }
 
 let collection;
-
 const run = async () => {
   try {
     await client.connect();
@@ -45,9 +44,34 @@ const run = async () => {
   }
 };
 
-run();
-
 ("use strict");
+
+const insertSampleBook = async () => {
+  try {
+    if (!collection) {
+      throw new Error("Collection is not initialized");
+    }
+    const sampleBook = new Books("Sample");
+    sampleBook._id = "123";
+    const sampleExists = await collection.findOne({ _id: "123" });
+    console.log(sampleExists);
+    if (sampleExists) {
+      return;
+    } else {
+      const result = await collection.insertOne(sampleBook.toObject());
+      console.log("Sample Book Added", result);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const initializeAndInsert = async () => {
+  await run();
+  await insertSampleBook();
+};
+
+initializeAndInsert();
 
 module.exports = function (app) {
   app
@@ -127,7 +151,7 @@ module.exports = function (app) {
       try {
         const result = await collection.updateOne(
           { _id: bookid },
-          { $push: { comments: comment } }
+          { $push: { comments: comment }, $inc: { commentcount: 1, __v: 1 } }
         );
         if (result.matchedCount === 0) {
           return res.send("no book exists");
